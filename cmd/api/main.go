@@ -5,8 +5,8 @@ import (
 	"log"
 	"sync"
 
-	"github.com/Temisaputra/warOnk/cmd/rest"
-	"github.com/Temisaputra/warOnk/cmd/rest/handler"
+	"github.com/Temisaputra/warOnk/cmd/api/rest"
+	"github.com/Temisaputra/warOnk/cmd/api/rest/handler"
 	"github.com/Temisaputra/warOnk/config"
 	"github.com/Temisaputra/warOnk/core/module"
 	conn "github.com/Temisaputra/warOnk/pkg/conn/postgre"

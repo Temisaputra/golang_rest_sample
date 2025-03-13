@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Temisaputra/warOnk/cmd/rest/handler"
+	"github.com/Temisaputra/warOnk/cmd/api/rest/handler"
 	"github.com/Temisaputra/warOnk/config"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
