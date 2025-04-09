@@ -1,4 +1,4 @@
-package entity
+package dto
 
 type Meta struct {
 	TotalData int64 `json:"total_data"`

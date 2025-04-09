@@ -9,7 +9,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/Temisaputra/warOnk/cmd/api/rest/handler"
+	"github.com/Temisaputra/warOnk/cmd/rest/handler"
 	"github.com/Temisaputra/warOnk/config"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -17,7 +17,6 @@ import (
 
 type Handlers struct {
 	ProductHandler *handler.ProductHandler
-	SalesHandler   *handler.SalesHandler
 }
 
 func Run(ctx context.Context, cfg config.Config, handlers *Handlers) error {
@@ -35,10 +34,7 @@ func Run(ctx context.Context, cfg config.Config, handlers *Handlers) error {
 	app.HandleFunc("/product/{id}", handlers.ProductHandler.GetProductByID).Methods("GET")
 	app.HandleFunc("/product-create", handlers.ProductHandler.CreateProduct).Methods("POST")
 	app.HandleFunc("/product-update/{id}", handlers.ProductHandler.UpdateProduct).Methods("PUT")
-	app.HandleFunc("/product-delete/{id}", handlers.ProductHandler.DeleteProduct).Methods("PUT")
-
-	//Sales
-	app.HandleFunc("/sales/create", handlers.SalesHandler.CreateSales).Methods("POST")
+	app.HandleFunc("/product-delete/{id}", handlers.ProductHandler.DeleteProduct).Methods("DELETE")
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:     []string{"*"},

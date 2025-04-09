@@ -24,7 +24,7 @@ func ValidateCurrentUser(cfg config.Config, r *http.Request) (*User, error) {
 		return nil, helper.NewErrUnauthorized("token not found")
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/auth/current-user", cfg.AuthServiceURL), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/auth/current-user", nil), nil)
 	if err != nil {
 		return nil, err
 	}

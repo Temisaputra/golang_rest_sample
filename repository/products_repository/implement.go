@@ -3,13 +3,12 @@ package products_repository
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	"github.com/Temisaputra/warOnk/config"
-	"github.com/Temisaputra/warOnk/core/entity"
+	"github.com/Temisaputra/warOnk/core/dto"
 	irepository "github.com/Temisaputra/warOnk/core/repository"
 	"gorm.io/gorm"
 )
@@ -77,7 +76,7 @@ func (r *repository) UseTx(tx irepository.TransactionalRepository) {
 	}
 }
 
-func (r *repository) GetAllProduct(ctx context.Context, pagination *entity.Pagination) (products []*entity.Products, meta entity.Meta, err error) {
+func (r *repository) GetAllProduct(ctx context.Context, pagination *dto.Pagination) (products []*dto.ProductResponse, meta dto.Meta, err error) {
 	db := r.db.WithContext(ctx).Model(&Products{}).Where("deleted_at IS NULL")
 
 	if pagination.Keyword != "" {
@@ -114,45 +113,36 @@ func (r *repository) GetAllProduct(ctx context.Context, pagination *entity.Pagin
 	meta.TotalPage = meta.TotalData/int64(pagination.PageSize) + 1
 
 	for _, item := range result {
-		products = append(products, item.ToEntity())
+		products = append(products, item.ToDTO())
 	}
 
 	return
 }
 
-func (r *repository) GetProductByID(ctx context.Context, id int) (*entity.Products, error) {
+func (r *repository) GetProductByID(ctx context.Context, id int) (*dto.ProductResponse, error) {
 	db := r.db.WithContext(ctx).Model(&Products{}).Where("id = ?", id)
 	var result Products
-	if err := db.First(&result).Error; err != nil {
+	if err := db.Where("deleted_at IS NULL").First(&result).Error; err != nil {
 		return nil, err
 	}
 
-	return result.ToEntity(), nil
+	return result.ToDTO(), nil
 }
 
-func (r *repository) CreateProduct(ctx context.Context, params *entity.ProductRequest) error {
+func (r *repository) CreateProduct(ctx context.Context, params *dto.ProductRequest) error {
 	conn := r.tx
 	if conn == nil {
 		conn = r.db.WithContext(ctx)
 	}
 
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
-	userId := 1
-	productImage, _ := json.Marshal(params.ProductImage)
 
 	storedData := map[string]interface{}{
-		"product_name":         params.ProductName,
-		"selling_price":        params.SellingPrice,
-		"purchase_price":       params.PurchasePrice,
-		"markup":               params.Markup,
-		"product_barcode":      params.ProductBarcode,
-		"product_stock":        params.ProductStock,
-		"product_image":        string(productImage),
-		"product_expired_date": params.ProductExpiredDate,
-		"id_category_product":  params.IdCategoryProduct,
-		"id_product_unit":      params.IdProductUnit,
-		"created_at":           currentTime,
-		"created_by":           userId,
+		"product_name":   params.ProductName,
+		"selling_price":  params.SellingPrice,
+		"purchase_price": params.PurchasePrice,
+		"product_stock":  params.ProductStock,
+		"created_at":     currentTime,
 	}
 	fmt.Println("data : ", storedData)
 	db := conn.WithContext(ctx).Model(&Products{})
@@ -163,29 +153,20 @@ func (r *repository) CreateProduct(ctx context.Context, params *entity.ProductRe
 	return nil
 }
 
-func (r *repository) UpdateProduct(ctx context.Context, params *entity.ProductRequest, id int) error {
+func (r *repository) UpdateProduct(ctx context.Context, params *dto.ProductRequest, id int) error {
 	conn := r.tx
 	if conn == nil {
 		conn = r.db.WithContext(ctx)
 	}
 
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
-	userId := 1
-	productImage, _ := json.Marshal(params.ProductImage)
 
 	updatedData := map[string]interface{}{
-		"product_name":         params.ProductName,
-		"selling_price":        params.SellingPrice,
-		"purchase_price":       params.PurchasePrice,
-		"markup":               params.Markup,
-		"product_barcode":      params.ProductBarcode,
-		"product_stock":        params.ProductStock,
-		"product_image":        string(productImage),
-		"product_expired_date": params.ProductExpiredDate,
-		"id_category_product":  params.IdCategoryProduct,
-		"id_product_unit":      params.IdProductUnit,
-		"updated_at":           currentTime,
-		"updated_by":           userId,
+		"product_name":   params.ProductName,
+		"selling_price":  params.SellingPrice,
+		"purchase_price": params.PurchasePrice,
+		"product_stock":  params.ProductStock,
+		"updated_at":     currentTime,
 	}
 
 	db := conn.WithContext(ctx).Model(&Products{})
@@ -203,11 +184,9 @@ func (r *repository) DeleteProduct(ctx context.Context, id int) error {
 	}
 
 	currentTime := time.Now().Format("2006-01-02 15:04:05")
-	userId := 1
 
 	deletedData := map[string]interface{}{
 		"deleted_at": currentTime,
-		"deleted_by": userId,
 	}
 
 	db := conn.WithContext(ctx).Model(&Products{})

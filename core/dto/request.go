@@ -1,4 +1,4 @@
-package entity
+package dto
 
 type Pagination struct {
 	Keyword   string `json:"keyword"`
