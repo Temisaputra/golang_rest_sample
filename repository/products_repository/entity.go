@@ -1,6 +1,10 @@
 package products_repository
 
-import "github.com/Temisaputra/warOnk/core/dto"
+import (
+	"github.com/Temisaputra/warOnk/core/dto"
+	gormigrate "github.com/go-gormigrate/gormigrate/v2"
+	"gorm.io/gorm"
+)
 
 type Products struct {
 	ID            int     `json:"id" gorm:"column:id;primaryKey;autoIncrement"`
@@ -25,4 +29,20 @@ func (p *Products) ToDTO() *dto.ProductResponse {
 		PurchasePrice: p.PurchasePrice,
 		ProductStock:  p.ProductStock,
 	}
+}
+
+func Migrate(db *gorm.DB) error {
+	m := gormigrate.New(db, gormigrate.DefaultOptions, []*gormigrate.Migration{
+		{
+			ID: "20240611_create_products",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(&Products{})
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.Migrator().DropTable("products")
+			},
+		},
+	})
+
+	return m.Migrate()
 }

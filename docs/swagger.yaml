@@ -1,0 +1,98 @@
+basePath: /api/war-onk
+definitions:
+  dto.Meta:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_data:
+        type: integer
+      total_page:
+        type: integer
+    type: object
+  dto.ProductResponse:
+    properties:
+      product_name:
+        type: string
+      product_stock:
+        type: integer
+      products_id:
+        type: integer
+      purchase_price:
+        type: number
+      selling_price:
+        type: number
+    type: object
+  helper.Response:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+      meta: {}
+      status:
+        type: integer
+    type: object
+host: localhost:8085
+info:
+  contact: {}
+  description: Ini dokumentasi Swagger untuk aplikasi HTTP
+  title: My HTTP API
+  version: "1.0"
+paths:
+  /products:
+    get:
+      consumes:
+      - application/json
+      description: Get All Product
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: page_size
+        type: integer
+      - description: Keyword for search
+        in: query
+        name: keyword
+        type: string
+      - description: Order by field
+        in: query
+        name: order_by
+        type: string
+      - description: Order type (asc/desc)
+        in: query
+        name: order_type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/dto.ProductResponse'
+                  type: array
+                meta:
+                  $ref: '#/definitions/dto.Meta'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.Response'
+      summary: Get All Product
+      tags:
+      - hello v1
+swagger: "2.0"

@@ -29,6 +29,21 @@ func NewProductHandler(productUsecase productUsecase) *ProductHandler {
 	}
 }
 
+// GetAllProduct godoc
+// @Tags hello v1
+// @Summary Get All Product
+// @Description Get All Product
+// @Accept json
+// @Produce json
+// @Param page query int false "Page number"
+// @Param page_size query int false "Page size"
+// @Param keyword query string false "Keyword for search"
+// @Param order_by query string false "Order by field"
+// @Param order_type query string false "Order type (asc/desc)"
+// @Success 200 {object} helper.Response{data=[]dto.ProductResponse,meta=dto.Meta}
+// @Failure 400 {object} helper.Response
+// @Failure 500 {object} helper.Response
+// @Router /products [get]
 func (h *ProductHandler) GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
 	pageSize, _ := strconv.Atoi(r.URL.Query().Get("page_size"))

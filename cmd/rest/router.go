@@ -13,6 +13,9 @@ import (
 	"github.com/Temisaputra/warOnk/config"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
+	httpSwagger "github.com/swaggo/http-swagger"
+
+	_ "github.com/Temisaputra/warOnk/docs" // Untuk swagger docs
 )
 
 type Handlers struct {
@@ -28,6 +31,9 @@ func Run(ctx context.Context, cfg config.Config, handlers *Handlers) error {
 
 	app := router.PathPrefix("/api/war-onk").Subrouter()
 	// app.Use(middleware.Authorization)
+	router.PathPrefix("/api/war-onk/swagger/").Handler(httpSwagger.Handler(
+		httpSwagger.URL("/api/war-onk/swagger/doc.json"),
+	))
 
 	//Product
 	app.HandleFunc("/products", handlers.ProductHandler.GetAllProduct).Methods("GET")
