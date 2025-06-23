@@ -196,3 +196,17 @@ func (r *repository) DeleteProduct(ctx context.Context, id int) error {
 
 	return nil
 }
+
+func (r *repository) GetDB() *gorm.DB {
+	if r.tx != nil {
+		return r.tx
+	}
+	return r.db
+}
+func (r *repository) GetTx() *gorm.DB {
+	if r.tx != nil {
+		return r.tx
+	}
+
+	return r.db
+}

@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/Temisaputra/warOnk/config"
@@ -24,7 +23,7 @@ func ValidateCurrentUser(cfg config.Config, r *http.Request) (*User, error) {
 		return nil, helper.NewErrUnauthorized("token not found")
 	}
 
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/auth/current-user", nil), nil)
+	req, err := http.NewRequest("GET", "/api/auth/current-user", nil)
 	if err != nil {
 		return nil, err
 	}

@@ -7,6 +7,8 @@ import (
 	"testing"
 
 	"github.com/Temisaputra/warOnk/core/dto"
+	"github.com/Temisaputra/warOnk/core/module"
+	_ "github.com/Temisaputra/warOnk/core/module"
 	products_repository_mock "github.com/Temisaputra/warOnk/repository/product_repository_mock"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
@@ -35,51 +37,28 @@ func TestGetProduct_Success(t *testing.T) {
 	}
 
 	// 3. Set expectation
-	mockProductRepo.On("GetAllProduct", mock.Anything, &dto.Pagination{
-		Page:      1,
-		PageSize:  10,
-		Keyword:   "",
-		OrderBy:   "",
-		OrderType: "",
-	}).Return(mockResponse, mockMeta, nil)
+	mockProductRepo.On("GetAllProduct", mock.Anything, mock.AnythingOfType("*dto.Pagination")).Return(mockResponse, mockMeta, nil)
 
-	// 5. Setup router dan request
-	r := mux.NewRouter()
-	r.HandleFunc("/products", func(w http.ResponseWriter, r *http.Request) {
-		resp, _, err := mockProductRepo.GetAllProduct(r.Context(), &dto.Pagination{
-			Page:      1,
-			PageSize:  10,
-			Keyword:   "",
-			OrderBy:   "",
-			OrderType: "",
-		})
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		json.NewEncoder(w).Encode(resp)
-	}).Methods("GET")
+	productUC := module.NewProductUsecase(mockProductRepo)
+	handler := NewProductHandler(productUC)
 
-	req, _ := http.NewRequest("GET", "/products", nil)
-	rr := httptest.NewRecorder()
+	// Setup HTTP test
+	req := httptest.NewRequest("GET", "/products?page=1&page_size=10", nil)
+	rec := httptest.NewRecorder()
 
-	// 6. Jalankan handler-nya
-	r.ServeHTTP(rr, req)
+	router := mux.NewRouter()
+	router.HandleFunc("/products", handler.GetAllProduct).Methods("GET")
+	router.ServeHTTP(rec, req)
 
-	// 7. Assert status code
-	assert.Equal(t, http.StatusOK, rr.Code)
+	assert.Equal(t, http.StatusOK, rec.Code)
 
-	// 8. Decode response body
-	var got []*dto.ProductResponse // ← ini array, karena response-nya slice
-	err := json.Unmarshal(rr.Body.Bytes(), &got)
+	var body map[string]interface{}
+	err := json.Unmarshal(rec.Body.Bytes(), &body)
 	assert.NoError(t, err)
 
-	// 9. Assert isi response
-	assert.Equal(t, mockResponse[0].ProductsId, got[0].ProductsId)
-	assert.Equal(t, mockResponse[0].ProductName, got[0].ProductName)
-	assert.Equal(t, mockResponse[0].SellingPrice, got[0].SellingPrice)
-	assert.Equal(t, mockResponse[0].PurchasePrice, got[0].PurchasePrice)
-	assert.Equal(t, mockResponse[0].ProductStock, got[0].ProductStock)
+	// Optional: assert content
+	data := body["data"].([]interface{})[0].(map[string]interface{})
+	assert.Equal(t, "Test Product", data["product_name"])
 
 	mockProductRepo.AssertExpectations(t)
 }
