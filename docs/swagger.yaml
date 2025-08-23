@@ -1,17 +1,28 @@
 basePath: /api/war-onk
 definitions:
-  dto.Meta:
+  helper.Response:
     properties:
-      page:
+      code:
         type: integer
-      page_size:
-        type: integer
-      total_data:
-        type: integer
-      total_page:
+      data: {}
+      message:
+        type: string
+      meta: {}
+      status:
         type: integer
     type: object
-  dto.ProductResponse:
+  presenter.ProductRequest:
+    properties:
+      product_name:
+        type: string
+      product_stock:
+        type: integer
+      purchase_price:
+        type: number
+      selling_price:
+        type: number
+    type: object
+  presenter.ProductResponse:
     properties:
       product_name:
         type: string
@@ -24,15 +35,15 @@ definitions:
       selling_price:
         type: number
     type: object
-  helper.Response:
+  response.Meta:
     properties:
-      code:
+      page:
         type: integer
-      data: {}
-      message:
-        type: string
-      meta: {}
-      status:
+      page_size:
+        type: integer
+      total_data:
+        type: integer
+      total_page:
         type: integer
     type: object
 host: localhost:8085
@@ -42,6 +53,41 @@ info:
   title: My HTTP API
   version: "1.0"
 paths:
+  /product-create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new product
+      parameters:
+      - description: Product data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/presenter.ProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/presenter.ProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/helper.Response'
+      summary: Create a new product
+      tags:
+      - Product
   /products:
     get:
       consumes:
@@ -79,10 +125,10 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/dto.ProductResponse'
+                    $ref: '#/definitions/presenter.ProductResponse'
                   type: array
                 meta:
-                  $ref: '#/definitions/dto.Meta'
+                  $ref: '#/definitions/response.Meta'
               type: object
         "400":
           description: Bad Request
@@ -94,5 +140,5 @@ paths:
             $ref: '#/definitions/helper.Response'
       summary: Get All Product
       tags:
-      - hello v1
+      - Product
 swagger: "2.0"

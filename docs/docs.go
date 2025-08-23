@@ -15,6 +15,64 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/product-create": {
+            "post": {
+                "description": "Create a new product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Product"
+                ],
+                "summary": "Create a new product",
+                "parameters": [
+                    {
+                        "description": "Product data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/presenter.ProductRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/helper.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/presenter.ProductResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/helper.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/helper.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/products": {
             "get": {
                 "description": "Get All Product",
@@ -25,7 +83,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "hello v1"
+                    "Product"
                 ],
                 "summary": "Get All Product",
                 "parameters": [
@@ -74,11 +132,11 @@ const docTemplate = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/dto.ProductResponse"
+                                                "$ref": "#/definitions/presenter.ProductResponse"
                                             }
                                         },
                                         "meta": {
-                                            "$ref": "#/definitions/dto.Meta"
+                                            "$ref": "#/definitions/response.Meta"
                                         }
                                     }
                                 }
@@ -102,24 +160,40 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dto.Meta": {
+        "helper.Response": {
             "type": "object",
             "properties": {
-                "page": {
+                "code": {
                     "type": "integer"
                 },
-                "page_size": {
-                    "type": "integer"
+                "data": {},
+                "message": {
+                    "type": "string"
                 },
-                "total_data": {
-                    "type": "integer"
-                },
-                "total_page": {
+                "meta": {},
+                "status": {
                     "type": "integer"
                 }
             }
         },
-        "dto.ProductResponse": {
+        "presenter.ProductRequest": {
+            "type": "object",
+            "properties": {
+                "product_name": {
+                    "type": "string"
+                },
+                "product_stock": {
+                    "type": "integer"
+                },
+                "purchase_price": {
+                    "type": "number"
+                },
+                "selling_price": {
+                    "type": "number"
+                }
+            }
+        },
+        "presenter.ProductResponse": {
             "type": "object",
             "properties": {
                 "product_name": {
@@ -139,18 +213,19 @@ const docTemplate = `{
                 }
             }
         },
-        "helper.Response": {
+        "response.Meta": {
             "type": "object",
             "properties": {
-                "code": {
+                "page": {
                     "type": "integer"
                 },
-                "data": {},
-                "message": {
-                    "type": "string"
+                "page_size": {
+                    "type": "integer"
                 },
-                "meta": {},
-                "status": {
+                "total_data": {
+                    "type": "integer"
+                },
+                "total_page": {
                     "type": "integer"
                 }
             }
