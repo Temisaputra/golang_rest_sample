@@ -47,11 +47,6 @@ func (u *productUsecase) GetProductByID(ctx context.Context, id int) (res *prese
 		return nil, errMsg
 	}
 
-	if res == nil {
-		errMsg := fmt.Errorf("[ProductUsecase-GetProductByID] Product not found")
-		return nil, errMsg
-	}
-
 	return res, nil
 }
 

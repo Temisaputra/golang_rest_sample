@@ -2,51 +2,52 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"github.com/Temisaputra/warOnk/infrastructure/config"
+	"github.com/Temisaputra/warOnk/infrastructure/logger"
+	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
 )
 
-func InitPostgreSQL(cfg *config.Config) *gorm.DB {
-	dsn := fmt.Sprintf("host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Jakarta", cfg.DBHost, cfg.DBUsername, cfg.DBPassword, cfg.DBName, cfg.DBPort)
-	db, err := gorm.Open(postgres.New(postgres.Config{
-		DSN:                  dsn,
-		PreferSimpleProtocol: true, // Disable statement caching
-	}), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			SingularTable: true,
-		},
-	})
-	if err != nil {
-		log.Fatalf(err.Error())
-		panic(err)
-	} else {
-		log.Printf("Successfully connected to database server")
-	}
-
-	rdb, err := db.DB()
-	if err != nil {
-		log.Fatalf(err.Error())
-		panic(err)
-	}
-
-	rdb.SetMaxIdleConns(cfg.DBMaxIdleConns)
-	rdb.SetMaxOpenConns(cfg.DBMaxOpenConns)
-	rdb.SetConnMaxLifetime(time.Duration(int(time.Minute) * cfg.DBMaxLifetime))
-	rdb.SetConnMaxIdleTime(time.Duration(int(time.Minute) * cfg.DBMaxIdleTime))
-
-	return db
+type Dependencies struct {
+	DB     *gorm.DB
+	Logger *zap.Logger
+	Cfg    *config.Config
 }
 
-func DbClose(db *gorm.DB) {
-	rdb, err := db.DB()
+func InitDependencies() *Dependencies {
+	cfg := config.Get()
+
+	// Init logger
+	log := logger.NewLogger()
+
+	// Init DB
+	dsn := fmt.Sprintf(
+		"host=%v user=%v password=%v dbname=%v port=%v sslmode=disable TimeZone=Asia/Jakarta",
+		cfg.DBHost, cfg.DBUsername, cfg.DBPassword, cfg.DBName, cfg.DBPort,
+	)
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN:                  dsn,
+		PreferSimpleProtocol: true,
+	}), &gorm.Config{
+		NamingStrategy: schema.NamingStrategy{SingularTable: true},
+	})
 	if err != nil {
-		log.Fatal(err.Error())
-		panic(err)
+		log.Fatal("failed to connect database", zap.Error(err))
 	}
-	_ = rdb.Close()
+
+	sqlDB, _ := db.DB()
+	sqlDB.SetMaxIdleConns(cfg.DBMaxIdleConns)
+	sqlDB.SetMaxOpenConns(cfg.DBMaxOpenConns)
+	sqlDB.SetConnMaxLifetime(time.Minute * time.Duration(cfg.DBMaxLifetime))
+	sqlDB.SetConnMaxIdleTime(time.Minute * time.Duration(cfg.DBMaxIdleTime))
+
+	return &Dependencies{
+		DB:     db,
+		Logger: log,
+		Cfg:    cfg,
+	}
 }

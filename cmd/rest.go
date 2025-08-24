@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,66 +10,65 @@ import (
 	"time"
 
 	"github.com/Temisaputra/warOnk/delivery/handler"
-	"github.com/Temisaputra/warOnk/infrastructure/config"
 	repository "github.com/Temisaputra/warOnk/infrastructure/db"
 	"github.com/Temisaputra/warOnk/infrastructure/router"
 	usecase "github.com/Temisaputra/warOnk/internal/usecase"
 	"github.com/spf13/cobra"
+	"go.uber.org/zap"
 )
 
 var restCmd = &cobra.Command{
 	Use:   "rest",
 	Short: "Run REST API server",
 	Run: func(cmd *cobra.Command, args []string) {
-		cfg := config.Get()
+		deps := InitDependencies() // 🔑 ambil dari bootstrap.go
+		defer func() {
+			sqlDB, _ := deps.DB.DB()
+			sqlDB.Close()
 
-		// Inisialisasi database
-		db := InitPostgreSQL(cfg)
-		defer DbClose(db)
+			// flush zap buffer
+			deps.Logger.Sync()
+		}()
 
-		// Dependency injection
-		productRepo := repository.NewProductRepo(db)
-		transactionRepo := repository.NewTransactionRepo(db)
+		// Inject dependency
+		productRepo := repository.NewProductRepo(deps.DB)
+		transactionRepo := repository.NewTransactionRepo(deps.DB)
 		productUC := usecase.NewProductUsecase(productRepo, transactionRepo)
 		productHandler := handler.NewProductHandler(productUC)
 
-		// Compose handlers
 		handlers := &router.Handlers{
 			ProductHandler: productHandler,
+			Logger:         deps.Logger,
 		}
 
-		// Buat router
-		router := router.NewRouter(handlers)
+		r := router.NewRouter(handlers)
 
-		// Buat HTTP server
 		server := &http.Server{
-			Addr:    fmt.Sprintf(":%s", cfg.HTTPPort),
-			Handler: router,
+			Addr:    fmt.Sprintf(":%s", deps.Cfg.HTTPPort),
+			Handler: r,
 		}
 
-		// Jalankan server di goroutine supaya bisa graceful shutdown
+		// Run server
 		go func() {
-			log.Printf("Server is starting on port %s", cfg.HTTPPort)
+			deps.Logger.Info("Starting REST server", zap.String("port", deps.Cfg.HTTPPort))
 			if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				log.Printf("Failed to start server: %v", err)
+				deps.Logger.Fatal("Failed to start server", zap.Error(err))
 			}
 		}()
 
-		// Tangkap interrupt signal untuk shutdown
+		// Graceful shutdown
 		quit := make(chan os.Signal, 1)
 		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 		<-quit
-		log.Println("Shutting down server...")
 
-		// Buat context dengan timeout untuk shutdown
-		ctxShutdown, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		deps.Logger.Info("Shutting down server...")
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
-		if err := server.Shutdown(ctxShutdown); err != nil {
-			log.Printf("Server forced to shutdown: %v", err)
+		if err := server.Shutdown(ctx); err != nil {
+			deps.Logger.Fatal("Server forced to shutdown", zap.Error(err))
 		}
-
-		log.Println("Server exited properly")
+		deps.Logger.Info("Server exited properly")
 	},
 }
 

@@ -6,22 +6,22 @@ A clean-architecture Go project for managing products and other modules with GOR
 
 ## Table of Contents
 
-- [Prerequisites](#prerequisites)  
-- [Installation](#installation)  
-- [Running the Application](#running-the-application)  
-- [Database Migration](#database-migration)  
-- [Swagger Documentation](#swagger-documentation)  
-- [Generating Mocks](#generating-mocks)  
-- [Project Structure](#project-structure)  
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Running the Application](#running-the-application)
+- [Database Migration](#database-migration)
+- [Swagger Documentation](#swagger-documentation)
+- [Generating Mocks](#generating-mocks)
+- [Project Structure](#project-structure)
 
 ---
 
 ## Prerequisites
 
-- Go 1.21+  
-- PostgreSQL 14+  
-- `mockgen` for generating Go mocks  
-- `make` for running predefined tasks  
+- Go 1.21+
+- PostgreSQL 14+
+- `mockgen` for generating Go mocks
+- `make` for running predefined tasks
 
 ---
 
@@ -40,7 +40,7 @@ cd war-onk
 go mod tidy
 ```
 
-3. Configure environment variables (e.g., `.env`) for database connection.  
+3. Configure environment variables (e.g., `.env`) for database connection.
 
 ---
 
@@ -85,16 +85,16 @@ go run main.go migrate fresh
 After starting the server, access the Swagger UI at:
 
 ```
-http://localhost:8085/api/war-onk/swagger/index.htm
+http://localhost:8085/swagger/index.html
 ```
 
 Use this to explore all endpoints including:
 
-- Product Create  
-- Product Get All  
-- Product Get By ID  
-- Product Update  
-- Product Delete  
+- Product Create
+- Product Get All
+- Product Get By ID
+- Product Update
+- Product Delete
 
 ---
 
@@ -133,9 +133,9 @@ make generate-mocks
 ├── main.go           # Entry point
 ```
 
-- **Repositories**: Handle DB transactions (optional, panic-safe).  
-- **Usecases**: Business logic. Use `WithTransaction(ctx, func(txCtx) error)` for atomic multi-repo operations.  
-- **Delivery**: REST API handlers with Swagger annotations.  
+- **Repositories**: Handle DB transactions (optional, panic-safe).
+- **Usecases**: Business logic. Use `WithTransaction(ctx, func(txCtx) error)` for atomic multi-repo operations.
+- **Delivery**: REST API handlers with Swagger annotations.
 
 ---
 
@@ -147,14 +147,13 @@ Run unit tests:
 go test ./... -v
 ```
 
-- Use GoMock for repository interfaces  
-- Use Convey for BDD-style testing  
+- Use GoMock for repository interfaces
+- Use Convey for BDD-style testing
 
 ---
 
 ## Notes
 
-- Transactions are optional and panic-safe.  
-- Supports multi-repository transactional operations.  
+- Transactions are optional and panic-safe.
+- Supports multi-repository transactional operations.
 - Error handling uses custom `TxError` type to distinguish commit, rollback, and operation errors.
-

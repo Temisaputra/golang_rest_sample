@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Temisaputra/warOnk/config"
+	"github.com/Temisaputra/warOnk/infrastructure/config"
 	"github.com/Temisaputra/warOnk/pkg/helper"
 )
 

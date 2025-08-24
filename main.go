@@ -1,8 +1,20 @@
-// @title       My HTTP API
-// @version     1.0
-// @description Ini dokumentasi Swagger untuk aplikasi HTTP
-// @host localhost:8085
-// @BasePath /api/war-onk
+// @title           My REST API
+// @version         1.0
+// @description     Documentation for my REST API
+// @termsOfService  http://swagger.io/terms/
+
+// @contact.name   Temi Saputra
+// @contact.email  youremail@example.com
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:8085
+// @BasePath  /api/war-onk
+
+// @securityDefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
 
 package main
 

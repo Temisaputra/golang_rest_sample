@@ -2,8 +2,11 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
+
+	"errors"
 
 	"github.com/Temisaputra/warOnk/delivery/presenter"
 	"github.com/Temisaputra/warOnk/delivery/presenter/request"
@@ -66,11 +69,14 @@ func (r *ProductRepository) GetAllProduct(ctx context.Context, pagination *reque
 	return
 }
 
-func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (*presenter.ProductResponse, error) {
-	db := r.Conn(ctx).WithContext(ctx).Model(&entity.Products{}).Where("id = ?", id)
+func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (product *presenter.ProductResponse, err error) {
 	var result entity.Products
+	db := r.Conn(ctx).WithContext(ctx).Model(&entity.Products{}).Where("id = ?", id)
 	if err := db.Where("deleted_at IS NULL").First(&result).Error; err != nil {
-		return nil, err
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("[ProductRepository-GetProductByID] Product not found: %w", err)
+		}
+		return nil, fmt.Errorf("[ProductRepository-GetProductByID] Error when getting product by id: %w", err)
 	}
 
 	return result.ToPresenter(), nil

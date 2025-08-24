@@ -5,18 +5,26 @@ import (
 
 	"github.com/Temisaputra/warOnk/delivery/handler"
 	_ "github.com/Temisaputra/warOnk/docs" // wajib untuk register doc
+	"github.com/Temisaputra/warOnk/infrastructure/middleware"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"go.uber.org/zap"
 )
 
 type Handlers struct {
 	ProductHandler *handler.ProductHandler
+	Logger         *zap.Logger
 }
 
 // NewRouter bikin router dan register semua endpoint
 func NewRouter(handlers *Handlers) http.Handler {
 	router := mux.NewRouter()
+
+	router.Use(middleware.LoggingMiddleware(handlers.Logger)) // <- inject logger
+
+	// Swagger endpoint
+	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
 
 	api := router.PathPrefix("/api/war-onk").Subrouter()
 
@@ -26,11 +34,6 @@ func NewRouter(handlers *Handlers) http.Handler {
 	api.HandleFunc("/product-create", handlers.ProductHandler.CreateProduct).Methods("POST")
 	api.HandleFunc("/product-update/{id}", handlers.ProductHandler.UpdateProduct).Methods("PUT")
 	api.HandleFunc("/product-delete/{id}", handlers.ProductHandler.DeleteProduct).Methods("DELETE")
-
-	// Swagger endpoint
-	router.PathPrefix("/api/war-onk/swagger/").Handler(httpSwagger.Handler(
-		httpSwagger.URL("/api/war-onk/swagger/doc.json"),
-	))
 
 	// CORS middleware
 	c := cors.New(cors.Options{

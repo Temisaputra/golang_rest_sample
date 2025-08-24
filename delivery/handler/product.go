@@ -74,6 +74,17 @@ func (h *ProductHandler) GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	helper.WriteResponse(w, nil, &response)
 }
 
+// GetProductByID godoc
+// @Tags Product
+// @Summary Get Product by ID
+// @Description Get Product by ID
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Success 200 {object} helper.Response{data=presenter.ProductResponse}
+// @Failure 400 {object} helper.Response
+// @Failure 500 {object} helper.Response
+// @Router /product/{id} [get]
 func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	idInt, _ := strconv.Atoi(id)
@@ -130,6 +141,18 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	helper.WriteResponse(w, nil, &response)
 }
 
+// UpdateProduct godoc
+// @Tags Product
+// @Summary Update a product
+// @Description Update a product
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Param request body presenter.ProductRequest true "Product data"
+// @Success 200 {object} helper.Response{data=presenter.ProductResponse}
+// @Failure 400 {object} helper.Response
+// @Failure 500 {object} helper.Response
+// @Router /products/{id} [put]
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	idInt, _ := strconv.Atoi(id)
@@ -161,6 +184,17 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	helper.WriteResponse(w, nil, &response)
 }
 
+// DeleteProduct godoc
+// @Tags Product
+// @Summary Delete a product
+// @Description Delete a product
+// @Accept json
+// @Produce json
+// @Param id path int true "Product ID"
+// @Success 200 {object} helper.Response{data=presenter.ProductResponse}
+// @Failure 400 {object} helper.Response
+// @Failure 500 {object} helper.Response
+// @Router /products/{id} [delete]
 func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	idInt, _ := strconv.Atoi(id)

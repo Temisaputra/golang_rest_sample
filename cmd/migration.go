@@ -3,7 +3,6 @@ package cmd
 import (
 	"log"
 
-	"github.com/Temisaputra/warOnk/infrastructure/config"
 	"github.com/Temisaputra/warOnk/internal/entity"
 	"github.com/spf13/cobra"
 )
@@ -41,8 +40,8 @@ var migrateFreshCmd = &cobra.Command{
 }
 
 func startMigrate(migrationType string) {
-	cfg := config.Get()
-	db := InitPostgreSQL(cfg) // pakai bootstrap InitPostgreSQL
+	deps := InitDependencies() // 🔑 ambil dari bootstrap.go
+	db := deps.DB
 
 	switch migrationType {
 	case "up":
