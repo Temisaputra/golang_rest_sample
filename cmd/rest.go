@@ -13,6 +13,7 @@ import (
 	repository "github.com/Temisaputra/warOnk/infrastructure/db"
 	"github.com/Temisaputra/warOnk/infrastructure/router"
 	usecase "github.com/Temisaputra/warOnk/internal/usecase"
+	"github.com/Temisaputra/warOnk/pkg/auth"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 )
@@ -42,17 +43,18 @@ var restCmd = &cobra.Command{
 		userRepo := repository.NewUserRepo(deps.DB)
 
 		// JWT Service
-		// jwtService := auth.NewJwtService(*deps.Cfg, *deps.Logger, userRepo)
+		jwtService := auth.NewJwtService(*deps.Cfg, *deps.Logger, userRepo)
 
 		// Auth
 		authRepo := repository.NewAuthRepo(deps.DB)
-		authUC := usecase.NewAuthUsecase(authRepo, userRepo, transactionRepo)
+		authUC := usecase.NewAuthUsecase(authRepo, userRepo, transactionRepo, jwtService)
 		authHandler := handler.NewAuthHandler(authUC)
 
 		handlers := &router.Handlers{
 			ProductHandler: productHandler,
 			AuthHandler:    authHandler,
 			Logger:         deps.Logger,
+			JwtService:     jwtService,
 		}
 
 		r := router.NewRouter(handlers)

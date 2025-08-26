@@ -23,7 +23,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/war-onk/login": {
+        "/login": {
             "post": {
                 "description": "Login a user",
                 "consumes": [
@@ -77,6 +77,11 @@ const docTemplate = `{
         },
         "/product-create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a new product",
                 "consumes": [
                     "application/json"
@@ -571,7 +576,7 @@ const docTemplate = `{
         }
     },
     "securityDefinitions": {
-        "ApiKeyAuth": {
+        "BearerAuth": {
             "type": "apiKey",
             "name": "Authorization",
             "in": "header"

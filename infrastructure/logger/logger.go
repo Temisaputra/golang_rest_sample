@@ -12,7 +12,7 @@ type Logger struct {
 func NewLogger() *zap.Logger {
 	// Bisa juga pakai zap.NewProduction() kalau di server beneran
 	cfg := zap.NewDevelopmentConfig()
-	cfg.DisableStacktrace = true // 🚀 stacktrace dimatikan
+	cfg.DisableStacktrace = false // 🚀 stacktrace dimatikan
 
 	logger, _ := cfg.Build()
 	return logger

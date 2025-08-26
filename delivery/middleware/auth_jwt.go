@@ -28,7 +28,7 @@ func (a *AuthMiddleware) Authorization(next http.Handler) http.Handler {
 			case auth.ErrUnauthorized:
 				helper.WriteResponse(w, auth.ErrUnauthorized, nil)
 			default:
-				helper.WriteResponse(w, nil, nil)
+				helper.WriteResponse(w, auth.ErrMissingToken, nil)
 			}
 			return
 		}

@@ -32,7 +32,7 @@ func (r *UserRepository) GetAllUsers(ctx context.Context) ([]presenter.UserRespo
 }
 
 func (r *UserRepository) CreateUser(ctx context.Context, user entity.Users) error {
-	if err := r.Conn(ctx).WithContext(ctx).Create(user).Error; err != nil {
+	if err := r.Conn(ctx).WithContext(ctx).Model(&entity.Users{}).Create(&user).Error; err != nil {
 		return err
 	}
 	return nil

@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -19,6 +20,7 @@ var (
 	ErrTokenExpired = errors.New("token expired")
 	ErrTokenInvalid = errors.New("token invalid")
 	ErrUnauthorized = errors.New("unauthorized")
+	ErrMissingToken = errors.New("missing token")
 )
 
 type JwtService interface {
@@ -51,9 +53,10 @@ func NewJwtService(cfg config.Config, log zap.Logger, userRepo repository.UserRe
 
 // Claims custom untuk JWT
 type Claims struct {
-	UserID int    `json:"user_id"`
-	Email  string `json:"email"`
-	Role   string `json:"role"`
+	UserID   int    `json:"user_id"`
+	Username string `json:"username"`
+	Email    string `json:"email"`
+	Role     string `json:"role"`
 	jwt.RegisteredClaims
 }
 
@@ -61,9 +64,10 @@ type Claims struct {
 func (s *jwtService) GenerateToken(user *entity.Users) (string, error) {
 	expirationTime := time.Now().Add(time.Hour * 1) // expired 1 jam
 	claims := &Claims{
-		UserID: user.ID,
-		Email:  user.Email,
-		Role:   user.Role,
+		UserID:   user.ID,
+		Username: user.Username,
+		Email:    user.Email,
+		Role:     user.Role,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -77,39 +81,42 @@ func (s *jwtService) GenerateToken(user *entity.Users) (string, error) {
 
 // ValidateCurrentUser validasi JWT dari header Authorization
 func (s *jwtService) ValidateCurrentUser(r *http.Request) (*entity.Users, error) {
-	tokenHeader := r.Header.Get("Authorization")
-	if tokenHeader == "" {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
 		return nil, helper.NewErrUnauthorized("missing token")
 	}
 
-	// format biasanya "Bearer <token>"
-	parts := strings.Split(tokenHeader, " ")
+	parts := strings.Fields(authHeader)
 	if len(parts) != 2 || strings.ToLower(parts[0]) != "bearer" {
 		return nil, helper.NewErrUnauthorized("invalid token format")
 	}
+
 	tokenString := parts[1]
 
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
+		}
 		return []byte(s.cfg.JWTSecret), nil
 	})
-	if err != nil || !token.Valid {
+
+	if err != nil {
 		return nil, helper.NewErrUnauthorized("invalid or expired token")
 	}
+	if !token.Valid {
+		return nil, helper.NewErrUnauthorized("invalid token")
+	}
 
-	// cek expiry manual (opsional karena jwt sudah cek)
 	if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
 		return nil, helper.NewErrUnauthorized("token expired")
 	}
 
-	// optional: kalau mau, bisa query ke DB untuk pastikan user masih ada
-	// user, err := s.userRepo.FindByID(claims.UserID)
-	// if err != nil { return nil, helper.NewErrUnauthorized("user not found") }
-
 	user := &entity.Users{
-		ID:    claims.UserID,
-		Email: claims.Email,
-		Role:  claims.Role,
+		ID:       claims.UserID,
+		Username: claims.Username,
+		Email:    claims.Email,
+		Role:     claims.Role,
 	}
 
 	return user, nil

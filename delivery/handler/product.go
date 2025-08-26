@@ -117,6 +117,7 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 // @Success 201 {object} helper.Response{data=presenter.ProductResponse}
 // @Failure 400 {object} helper.Response
 // @Failure 500 {object} helper.Response
+// @Security BearerAuth
 // @Router /product-create [post]
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	var params presenter.ProductRequest

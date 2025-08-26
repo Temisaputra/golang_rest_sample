@@ -68,7 +68,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 // @Param request body presenter.LoginRequest true "Login request"
 // @Success 200 {object} helper.Response{data=presenter.LoginResponse{}} "success"
 // @Failure 400 {object} helper.Response "bad request"
-// @Router /api/war-onk/login [post]
+// @Router /login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var request presenter.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {

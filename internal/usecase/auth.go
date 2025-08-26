@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"log"
 
 	"github.com/Temisaputra/warOnk/delivery/presenter"
 	"github.com/Temisaputra/warOnk/delivery/repository"
@@ -17,11 +18,12 @@ type AuthUsecase struct {
 	jwtService      auth.JwtService
 }
 
-func NewAuthUsecase(authRepository repository.AuthRepository, userRepository repository.UserRepository, transactionRepository repository.TransactionRepository) *AuthUsecase {
+func NewAuthUsecase(authRepository repository.AuthRepository, userRepository repository.UserRepository, transactionRepository repository.TransactionRepository, jwtService auth.JwtService) *AuthUsecase {
 	return &AuthUsecase{
 		authRepo:        authRepository,
 		userRepo:        userRepository,
 		transactionRepo: transactionRepository,
+		jwtService:      jwtService,
 	}
 }
 
@@ -56,7 +58,7 @@ func (u *AuthUsecase) Login(ctx context.Context, params *presenter.LoginRequest)
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(params.Password)); err != nil {
 		return nil, err
 	}
-
+	log.Printf("User logged in: %v", user.Email)
 	token, err := u.jwtService.GenerateToken(&user)
 	if err != nil {
 		return nil, err

@@ -102,7 +102,7 @@ info:
   title: My REST API
   version: "1.0"
 paths:
-  /api/war-onk/login:
+  /login:
     post:
       consumes:
       - application/json
@@ -165,6 +165,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
       summary: Create a new product
       tags:
       - Product
@@ -355,7 +357,7 @@ paths:
       tags:
       - auth
 securityDefinitions:
-  ApiKeyAuth:
+  BearerAuth:
     in: header
     name: Authorization
     type: apiKey
