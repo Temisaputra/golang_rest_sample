@@ -9,10 +9,10 @@ import (
 
 	"github.com/Temisaputra/warOnk/delivery/repository"
 	"github.com/Temisaputra/warOnk/infrastructure/config"
-	"github.com/Temisaputra/warOnk/infrastructure/logger"
 	"github.com/Temisaputra/warOnk/internal/entity"
 	"github.com/Temisaputra/warOnk/pkg/helper"
 	"github.com/golang-jwt/jwt/v5"
+	"go.uber.org/zap"
 )
 
 var (
@@ -28,7 +28,7 @@ type JwtService interface {
 
 type jwtService struct {
 	cfg      config.Config
-	log      logger.Logger
+	log      zap.Logger
 	userRepo repository.UserRepository
 }
 
@@ -41,7 +41,7 @@ const (
 	JWTContext  JWTContextKey  = "JWT_CONTEXT_KEY"
 )
 
-func NewJwtService(cfg config.Config, log logger.Logger, userRepo repository.UserRepository) JwtService {
+func NewJwtService(cfg config.Config, log zap.Logger, userRepo repository.UserRepository) JwtService {
 	return &jwtService{
 		cfg:      cfg,
 		log:      log,

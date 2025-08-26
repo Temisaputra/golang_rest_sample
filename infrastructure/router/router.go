@@ -16,6 +16,7 @@ import (
 type Handlers struct {
 	ProductHandler *handler.ProductHandler
 	UserHandler    *handler.UserHandler
+	AuthHandler    *handler.AuthHandler
 	Logger         *zap.Logger
 	JwtService     auth.JwtService
 }
@@ -32,6 +33,11 @@ func NewRouter(handlers *Handlers) http.Handler {
 
 	api := router.PathPrefix("/api/war-onk").Subrouter()
 
+	// ---------------- Public ----------------
+	// Auth endpoints
+	api.HandleFunc("/register", handlers.AuthHandler.Register).Methods("POST")
+	api.HandleFunc("/login", handlers.AuthHandler.Login).Methods("POST")
+
 	// ---------------- Protected ----------------
 	protected := api.PathPrefix("").Subrouter()
 	protected.Use(authMW.Authorization)
@@ -43,7 +49,7 @@ func NewRouter(handlers *Handlers) http.Handler {
 	protected.HandleFunc("/product-delete/{id}", handlers.ProductHandler.DeleteProduct).Methods("DELETE")
 
 	// User endpoints
-	protected.HandleFunc("/users", handlers.UserHandler.GetAllUsers).Methods("GET")
+	protected.HandleFunc("/users", handlers.UserHandler.GetAllUser).Methods("GET")
 	protected.HandleFunc("/user/{id}", handlers.UserHandler.GetUserByID).Methods("GET")
 	protected.HandleFunc("/user-create", handlers.UserHandler.CreateUser).Methods("POST")
 	protected.HandleFunc("/user-update/{id}", handlers.UserHandler.UpdateUser).Methods("PUT")

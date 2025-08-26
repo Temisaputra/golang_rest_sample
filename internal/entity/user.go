@@ -19,11 +19,11 @@ func (r *Users) TableName() string {
 	return "users"
 }
 
-func (u *Users) ToPresenter() *presenter.Users {
-	return &presenter.Users{
-		ID:       u.ID,
-		Email:    u.Email,
-		Name:     u.Username,
-		Password: u.Password,
+func (u *Users) ToPresenter() *presenter.UserResponse {
+	return &presenter.UserResponse{
+		ID:    u.ID,
+		Email: u.Email,
+		Name:  u.Username,
+		Role:  u.Role,
 	}
 }

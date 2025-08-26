@@ -13,18 +13,18 @@ type UserRepository struct {
 	*TransactionRepository
 }
 
-func NewUserRepository(db *gorm.DB) irepository.UserRepository {
+func NewUserRepo(db *gorm.DB) irepository.UserRepository {
 	return &UserRepository{
 		TransactionRepository: NewTransactionRepo(db),
 	}
 }
 
-func (r *UserRepository) GetAllUsers(ctx context.Context) ([]presenter.Users, error) {
+func (r *UserRepository) GetAllUsers(ctx context.Context) ([]presenter.UserResponse, error) {
 	var users []entity.Users
 	if err := r.db.WithContext(ctx).Find(&users).Error; err != nil {
 		return nil, err
 	}
-	var presenters []presenter.Users
+	var presenters []presenter.UserResponse
 	for _, user := range users {
 		presenters = append(presenters, *user.ToPresenter())
 	}

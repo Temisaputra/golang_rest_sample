@@ -31,20 +31,23 @@ func (u *AuthUsecase) Register(ctx context.Context, params *presenter.RegisterRe
 		if err != nil {
 			return err
 		}
-		registerData := entity.Users{
+
+		// Mapping ke entity
+		user := entity.Users{
 			Username: params.Username,
 			Email:    params.Email,
 			Role:     params.Role,
 			Password: string(hash),
 		}
-		if err := u.userRepo.CreateUser(txCtx, registerData); err != nil {
+
+		if err := u.userRepo.CreateUser(txCtx, user); err != nil {
 			return err
 		}
 		return nil
 	})
 }
 
-func (u *AuthUsecase) Login(ctx context.Context, params presenter.LoginRequest) (res *presenter.LoginResponse, err error) {
+func (u *AuthUsecase) Login(ctx context.Context, params *presenter.LoginRequest) (res *presenter.LoginResponse, err error) {
 	user, err := u.userRepo.GetUserByEmail(ctx, params.Email)
 	if err != nil {
 		return nil, err
