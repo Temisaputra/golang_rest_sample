@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Temisaputra/warOnk/pkg/auth"
@@ -20,6 +21,7 @@ func (a *AuthMiddleware) Authorization(next http.Handler) http.Handler {
 
 		user, err := a.jwtSvc.ValidateCurrentUser(r)
 		if err != nil {
+			log.Println("Error validating user:", err)
 			switch err {
 			case auth.ErrTokenExpired:
 				helper.WriteResponse(w, auth.ErrTokenExpired, nil)

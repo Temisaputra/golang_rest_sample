@@ -45,6 +45,7 @@ func NewProductHandler(productUsecase productUsecase) *ProductHandler {
 // @Success 200 {object} helper.Response{data=[]presenter.ProductResponse,meta=response.Meta}
 // @Failure 400 {object} helper.Response
 // @Failure 500 {object} helper.Response
+// @Security BearerAuth
 // @Router /products [get]
 func (h *ProductHandler) GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))

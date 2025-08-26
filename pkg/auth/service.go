@@ -18,7 +18,7 @@ import (
 
 var (
 	ErrTokenExpired = errors.New("token expired")
-	ErrTokenInvalid = errors.New("token invalid")
+	ErrTokenInvalid = errors.New("invalid token")
 	ErrUnauthorized = errors.New("unauthorized")
 	ErrMissingToken = errors.New("missing token")
 )
@@ -92,26 +92,30 @@ func (s *jwtService) ValidateCurrentUser(r *http.Request) (*entity.Users, error)
 	}
 
 	tokenString := parts[1]
-
 	claims := &Claims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
+
+	// Parse token sesuai JWT v5
+	_, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		}
 		return []byte(s.cfg.JWTSecret), nil
 	})
 
+	// Tangani error expired secara spesifik
 	if err != nil {
-		return nil, helper.NewErrUnauthorized("invalid or expired token")
-	}
-	if !token.Valid {
+		if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, helper.NewErrUnauthorized("token expired")
+		}
 		return nil, helper.NewErrUnauthorized("invalid token")
 	}
 
-	if claims.ExpiresAt != nil && claims.ExpiresAt.Time.Before(time.Now()) {
+	// Optional check (claims.ExpiresAt biasanya dicek oleh JWT lib)
+	if claims.ExpiresAt != nil && claims.ExpiresAt.Before(time.Now()) {
 		return nil, helper.NewErrUnauthorized("token expired")
 	}
 
+	// Buat object user dari claims
 	user := &entity.Users{
 		ID:       claims.UserID,
 		Username: claims.Username,

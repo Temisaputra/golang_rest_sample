@@ -254,6 +254,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
       summary: Get All Product
       tags:
       - Product
