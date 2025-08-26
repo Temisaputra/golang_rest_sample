@@ -6,11 +6,10 @@ import (
 )
 
 type Response struct {
-	Code        int         `json:"code,omitempty"`
-	SatatusCode int         `json:"status,omitempty"`
-	Message     string      `json:"message"`
-	Meta        interface{} `json:"meta,omitempty"`
-	Data        interface{} `json:"data,omitempty" `
+	StatusCode int         `json:"status,omitempty"`
+	Message    string      `json:"message"`
+	Meta       interface{} `json:"meta,omitempty"`
+	Data       interface{} `json:"data,omitempty" `
 }
 
 func failResponseWriter(w http.ResponseWriter, err error, errStatusCode int) {
@@ -18,7 +17,7 @@ func failResponseWriter(w http.ResponseWriter, err error, errStatusCode int) {
 
 	var resp Response
 	w.WriteHeader(errStatusCode)
-	resp.SatatusCode = errStatusCode
+	resp.StatusCode = errStatusCode
 	resp.Message = err.Error()
 	resp.Data = nil
 

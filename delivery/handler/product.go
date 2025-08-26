@@ -66,7 +66,7 @@ func (h *ProductHandler) GetAllProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 	response.Meta = &meta
 	response.Data = data
@@ -100,7 +100,7 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 	response.Data = data
 
@@ -135,7 +135,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusCreated
+	response.StatusCode = http.StatusCreated
 	response.Message = "success"
 
 	helper.WriteResponse(w, nil, &response)
@@ -178,7 +178,7 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 
 	helper.WriteResponse(w, nil, &response)
@@ -212,7 +212,7 @@ func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 
 	helper.WriteResponse(w, nil, &response)

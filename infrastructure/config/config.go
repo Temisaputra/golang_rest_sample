@@ -15,6 +15,8 @@ type Config struct {
 	DBMaxIdleTime  int    `envconfig:"DB_MAX_IDLE_TIME"`
 	DBMaxLifetime  int    `envconfig:"DB_MAX_LIFETIME"`
 	AppName        string `envconfig:"APP_NAME" default:"be-inventory"`
+	JWTSecret      string `envconfig:"JWT_SECRET"`
+	JWTExpiration  string `envconfig:"JWT_EXPIRATION" default:"1h"`
 }
 
 func Get() *Config {
