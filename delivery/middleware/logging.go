@@ -5,11 +5,12 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Temisaputra/warOnk/internal/infrastructure/config"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 )
 
-func LoggingMiddleware(logger *zap.Logger) func(http.Handler) http.Handler {
+func LoggingMiddleware(logger *zap.Logger, config *config.Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -29,6 +30,8 @@ func LoggingMiddleware(logger *zap.Logger) func(http.Handler) http.Handler {
 				zap.Int("status_code", rw.statusCode),
 				zap.Duration("latency", latency),
 				zap.String("client_ip", r.RemoteAddr),
+				zap.String("service", config.AppName),
+				zap.String("env", config.Env),
 			}
 
 			switch {

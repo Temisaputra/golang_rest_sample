@@ -18,6 +18,7 @@ type Config struct {
 	JWTSecret         string `envconfig:"JWT_SECRET"`
 	JWTExpiration     string `envconfig:"JWT_EXPIRATION" default:"1h"`
 	DisableStacktrace bool   `envconfig:"DISABLE_STACKTRACE" default:"false"`
+	Env               string `envconfig:"ENV" default:"development"`
 }
 
 func Get() *Config {

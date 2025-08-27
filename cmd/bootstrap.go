@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Temisaputra/warOnk/infrastructure/config"
-	"github.com/Temisaputra/warOnk/infrastructure/logger"
+	"github.com/Temisaputra/warOnk/internal/infrastructure/config"
+	"github.com/Temisaputra/warOnk/internal/infrastructure/logger"
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

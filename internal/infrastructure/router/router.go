@@ -6,6 +6,7 @@ import (
 	"github.com/Temisaputra/warOnk/delivery/handler"
 	"github.com/Temisaputra/warOnk/delivery/middleware"
 	_ "github.com/Temisaputra/warOnk/docs" // wajib untuk register doc
+	"github.com/Temisaputra/warOnk/internal/infrastructure/config"
 	"github.com/Temisaputra/warOnk/pkg/auth"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -24,9 +25,10 @@ type Handlers struct {
 // NewRouter bikin router dan register semua endpoint
 func NewRouter(handlers *Handlers) http.Handler {
 	router := mux.NewRouter()
+	config := config.Get()
 	authMW := middleware.NewAuthMiddleware(handlers.JwtService)
 
-	router.Use(middleware.LoggingMiddleware(handlers.Logger)) // <- inject logger
+	router.Use(middleware.LoggingMiddleware(handlers.Logger, config)) // <- inject logger
 
 	// Swagger endpoint
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)

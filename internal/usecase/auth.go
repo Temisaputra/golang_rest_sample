@@ -2,11 +2,10 @@ package usecase
 
 import (
 	"context"
-	"log"
 
 	"github.com/Temisaputra/warOnk/delivery/presenter"
 	"github.com/Temisaputra/warOnk/delivery/repository"
-	"github.com/Temisaputra/warOnk/internal/entity"
+	"github.com/Temisaputra/warOnk/internal/domain"
 	"github.com/Temisaputra/warOnk/pkg/auth"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -34,8 +33,8 @@ func (u *AuthUsecase) Register(ctx context.Context, params *presenter.RegisterRe
 			return err
 		}
 
-		// Mapping ke entity
-		user := entity.Users{
+		// Mapping ke domain
+		user := domain.Users{
 			Username: params.Username,
 			Email:    params.Email,
 			Role:     params.Role,
@@ -58,7 +57,7 @@ func (u *AuthUsecase) Login(ctx context.Context, params *presenter.LoginRequest)
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(params.Password)); err != nil {
 		return nil, err
 	}
-	log.Printf("User logged in: %v", user.Email)
+
 	token, err := u.jwtService.GenerateToken(&user)
 	if err != nil {
 		return nil, err

@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/Temisaputra/warOnk/delivery/repository"
-	"github.com/Temisaputra/warOnk/infrastructure/config"
-	"github.com/Temisaputra/warOnk/internal/entity"
+	"github.com/Temisaputra/warOnk/internal/domain"
+	"github.com/Temisaputra/warOnk/internal/infrastructure/config"
 	"github.com/Temisaputra/warOnk/pkg/helper"
 	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
@@ -24,8 +24,8 @@ var (
 )
 
 type JwtService interface {
-	GenerateToken(user *entity.Users) (string, error)
-	ValidateCurrentUser(r *http.Request) (*entity.Users, error)
+	GenerateToken(user *domain.Users) (string, error)
+	ValidateCurrentUser(r *http.Request) (*domain.Users, error)
 }
 
 type jwtService struct {
@@ -61,7 +61,7 @@ type Claims struct {
 }
 
 // GenerateToken bikin token baru untuk user
-func (s *jwtService) GenerateToken(user *entity.Users) (string, error) {
+func (s *jwtService) GenerateToken(user *domain.Users) (string, error) {
 	expirationTime := time.Now().Add(time.Hour * 1) // expired 1 jam
 	claims := &Claims{
 		UserID:   user.ID,
@@ -80,7 +80,7 @@ func (s *jwtService) GenerateToken(user *entity.Users) (string, error) {
 }
 
 // ValidateCurrentUser validasi JWT dari header Authorization
-func (s *jwtService) ValidateCurrentUser(r *http.Request) (*entity.Users, error) {
+func (s *jwtService) ValidateCurrentUser(r *http.Request) (*domain.Users, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		return nil, helper.NewErrUnauthorized("missing token")
@@ -116,7 +116,7 @@ func (s *jwtService) ValidateCurrentUser(r *http.Request) (*entity.Users, error)
 	}
 
 	// Buat object user dari claims
-	user := &entity.Users{
+	user := &domain.Users{
 		ID:       claims.UserID,
 		Username: claims.Username,
 		Email:    claims.Email,
@@ -127,15 +127,15 @@ func (s *jwtService) ValidateCurrentUser(r *http.Request) (*entity.Users, error)
 }
 
 // SetUserContext masukkan user & jwt token ke dalam context
-func SetUserContext(r *http.Request, user *entity.Users) *http.Request {
+func SetUserContext(r *http.Request, user *domain.Users) *http.Request {
 	ctx := r.Context()
 	ctx = context.WithValue(ctx, UserContext, user)
 	ctx = context.WithValue(ctx, JWTContext, r.Header.Get("Authorization"))
 	return r.WithContext(ctx)
 }
 
-func GetUserContext(ctx context.Context) *entity.Users {
-	user, ok := ctx.Value(UserContext).(*entity.Users)
+func GetUserContext(ctx context.Context) *domain.Users {
+	user, ok := ctx.Value(UserContext).(*domain.Users)
 	if !ok {
 		return nil
 	}

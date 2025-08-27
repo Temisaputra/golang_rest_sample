@@ -3,7 +3,7 @@ package cmd
 import (
 	"log"
 
-	"github.com/Temisaputra/warOnk/internal/entity"
+	"github.com/Temisaputra/warOnk/internal/domain"
 	"github.com/spf13/cobra"
 )
 
@@ -45,20 +45,20 @@ func startMigrate(migrationType string) {
 
 	switch migrationType {
 	case "up":
-		if err := entity.Migrate(db); err != nil {
+		if err := domain.Migrate(db); err != nil {
 			log.Fatalf("migration up failed: %v", err)
 		}
 		log.Println("✅ migration up success")
 	case "down":
-		if err := entity.Drop(db); err != nil {
+		if err := domain.Drop(db); err != nil {
 			log.Fatalf("migration down failed: %v", err)
 		}
 		log.Println("✅ migration down success")
 	case "fresh":
-		if err := entity.Drop(db); err != nil {
+		if err := domain.Drop(db); err != nil {
 			log.Fatalf("migration fresh (drop) failed: %v", err)
 		}
-		if err := entity.Migrate(db); err != nil {
+		if err := domain.Migrate(db); err != nil {
 			log.Fatalf("migration fresh (migrate) failed: %v", err)
 		}
 		log.Println("✅ migration fresh success")

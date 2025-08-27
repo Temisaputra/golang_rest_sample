@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/Temisaputra/warOnk/infrastructure/config"
+	"github.com/Temisaputra/warOnk/internal/infrastructure/config"
 	_ "github.com/lib/pq"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

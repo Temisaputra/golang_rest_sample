@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/Temisaputra/warOnk/delivery/handler"
-	repository "github.com/Temisaputra/warOnk/infrastructure/db"
-	"github.com/Temisaputra/warOnk/infrastructure/router"
+	repository "github.com/Temisaputra/warOnk/internal/infrastructure/db"
+	"github.com/Temisaputra/warOnk/internal/infrastructure/router"
 	usecase "github.com/Temisaputra/warOnk/internal/usecase"
 	"github.com/Temisaputra/warOnk/pkg/auth"
 	"github.com/spf13/cobra"
