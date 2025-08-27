@@ -22,16 +22,7 @@ func (a *AuthMiddleware) Authorization(next http.Handler) http.Handler {
 		user, err := a.jwtSvc.ValidateCurrentUser(r)
 		if err != nil {
 			log.Println("Error validating user:", err)
-			switch err {
-			case auth.ErrTokenExpired:
-				helper.WriteResponse(w, auth.ErrTokenExpired, nil)
-			case auth.ErrTokenInvalid:
-				helper.WriteResponse(w, auth.ErrTokenInvalid, nil)
-			case auth.ErrUnauthorized:
-				helper.WriteResponse(w, auth.ErrUnauthorized, nil)
-			default:
-				helper.WriteResponse(w, auth.ErrMissingToken, nil)
-			}
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 

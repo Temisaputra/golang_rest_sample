@@ -34,13 +34,13 @@ func successResponseWriter(w http.ResponseWriter, response *Response) {
 
 func WriteResponse(w http.ResponseWriter, err error, response *Response) {
 	switch err.(type) {
-	case *ErrForbidden, ErrForbidden:
+	case *ErrForbidden:
 		failResponseWriter(w, err, http.StatusForbidden)
-	case *ErrUnauthorized, ErrUnauthorized:
+	case *ErrUnauthorized:
 		failResponseWriter(w, err, http.StatusUnauthorized)
-	case *ErrNotFound, ErrNotFound:
+	case *ErrNotFound:
 		failResponseWriter(w, err, http.StatusNotFound)
-	case *ErrBadRequest, ErrBadRequest:
+	case *ErrBadRequest:
 		failResponseWriter(w, err, http.StatusBadRequest)
 	case nil:
 		successResponseWriter(w, response)
