@@ -1,8 +1,6 @@
 package entity
 
-import (
-	"github.com/Temisaputra/warOnk/delivery/presenter"
-)
+import "github.com/Temisaputra/warOnk/delivery/presenter"
 
 type Products struct {
 	ID            int     `json:"id" gorm:"column:id;primaryKey;autoIncrement"`

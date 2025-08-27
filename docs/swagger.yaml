@@ -2,14 +2,30 @@ basePath: /api/war-onk
 definitions:
   helper.Response:
     properties:
-      code:
-        type: integer
       data: {}
       message:
         type: string
       meta: {}
       status:
         type: integer
+    type: object
+  presenter.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  presenter.LoginResponse:
+    properties:
+      access_token:
+        type: string
+      user:
+        $ref: '#/definitions/presenter.UserResponse'
     type: object
   presenter.ProductRequest:
     properties:
@@ -35,6 +51,33 @@ definitions:
       selling_price:
         type: number
     type: object
+  presenter.RegisterRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 6
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    required:
+    - email
+    - password
+    - username
+    type: object
+  presenter.UserResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      role:
+        type: string
+    type: object
   response.Meta:
     properties:
       page:
@@ -59,6 +102,37 @@ info:
   title: My REST API
   version: "1.0"
 paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login a user
+      parameters:
+      - description: Login request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/presenter.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: success
+          schema:
+            allOf:
+            - $ref: '#/definitions/helper.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/presenter.LoginResponse'
+              type: object
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.Response'
+      summary: Login a user
+      tags:
+      - auth
   /product-create:
     post:
       consumes:
@@ -91,6 +165,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
       summary: Create a new product
       tags:
       - Product
@@ -178,6 +254,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/helper.Response'
+      security:
+      - BearerAuth: []
       summary: Get All Product
       tags:
       - Product
@@ -254,8 +332,34 @@ paths:
       summary: Update a product
       tags:
       - Product
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: Register request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/presenter.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: success
+          schema:
+            $ref: '#/definitions/helper.Response'
+        "400":
+          description: bad request
+          schema:
+            $ref: '#/definitions/helper.Response'
+      summary: Register a new user
+      tags:
+      - auth
 securityDefinitions:
-  ApiKeyAuth:
+  BearerAuth:
     in: header
     name: Authorization
     type: apiKey

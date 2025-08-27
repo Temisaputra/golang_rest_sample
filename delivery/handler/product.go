@@ -45,6 +45,7 @@ func NewProductHandler(productUsecase productUsecase) *ProductHandler {
 // @Success 200 {object} helper.Response{data=[]presenter.ProductResponse,meta=response.Meta}
 // @Failure 400 {object} helper.Response
 // @Failure 500 {object} helper.Response
+// @Security BearerAuth
 // @Router /products [get]
 func (h *ProductHandler) GetAllProduct(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.Atoi(r.URL.Query().Get("page"))
@@ -66,7 +67,7 @@ func (h *ProductHandler) GetAllProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 	response.Meta = &meta
 	response.Data = data
@@ -100,7 +101,7 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 	response.Data = data
 
@@ -117,6 +118,7 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 // @Success 201 {object} helper.Response{data=presenter.ProductResponse}
 // @Failure 400 {object} helper.Response
 // @Failure 500 {object} helper.Response
+// @Security BearerAuth
 // @Router /product-create [post]
 func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	var params presenter.ProductRequest
@@ -135,7 +137,7 @@ func (h *ProductHandler) CreateProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusCreated
+	response.StatusCode = http.StatusCreated
 	response.Message = "success"
 
 	helper.WriteResponse(w, nil, &response)
@@ -178,7 +180,7 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 
 	helper.WriteResponse(w, nil, &response)
@@ -212,7 +214,7 @@ func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 
 	var response helper.Response
 
-	response.Code = http.StatusOK
+	response.StatusCode = http.StatusOK
 	response.Message = "success"
 
 	helper.WriteResponse(w, nil, &response)

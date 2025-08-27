@@ -12,7 +12,7 @@
 // @host      localhost:8085
 // @BasePath  /api/war-onk
 
-// @securityDefinitions.apikey ApiKeyAuth
+// @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
 

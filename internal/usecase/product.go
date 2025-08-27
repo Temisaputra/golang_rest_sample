@@ -1,4 +1,4 @@
-package module
+package usecase
 
 import (
 	"context"
@@ -10,19 +10,19 @@ import (
 	"github.com/Temisaputra/warOnk/delivery/repository"
 )
 
-type productUsecase struct {
+type ProductUsecase struct {
 	productRepo     repository.ProductRepository
 	transactionRepo repository.TransactionRepository
 }
 
-func NewProductUsecase(productRepository repository.ProductRepository, transactionRepository repository.TransactionRepository) *productUsecase {
-	return &productUsecase{
+func NewProductUsecase(productRepository repository.ProductRepository, transactionRepository repository.TransactionRepository) *ProductUsecase {
+	return &ProductUsecase{
 		productRepo:     productRepository,
 		transactionRepo: transactionRepository,
 	}
 }
 
-func (u *productUsecase) GetAllProduct(ctx context.Context, pagination *request.Pagination) (produtcs []*presenter.ProductResponse, meta response.Meta, err error) {
+func (u *ProductUsecase) GetAllProduct(ctx context.Context, pagination *request.Pagination) (produtcs []*presenter.ProductResponse, meta response.Meta, err error) {
 	if pagination.Page == 0 {
 		pagination.Page = 1
 	}
@@ -40,7 +40,7 @@ func (u *productUsecase) GetAllProduct(ctx context.Context, pagination *request.
 	return res, meta, nil
 }
 
-func (u *productUsecase) GetProductByID(ctx context.Context, id int) (res *presenter.ProductResponse, err error) {
+func (u *ProductUsecase) GetProductByID(ctx context.Context, id int) (res *presenter.ProductResponse, err error) {
 	res, err = u.productRepo.GetProductByID(ctx, id)
 	if err != nil {
 		errMsg := fmt.Errorf("[ProductUsecase-GetProductByID] Error when getting product by id: %w", err)
@@ -50,7 +50,7 @@ func (u *productUsecase) GetProductByID(ctx context.Context, id int) (res *prese
 	return res, nil
 }
 
-func (u *productUsecase) CreateProduct(ctx context.Context, params *presenter.ProductRequest) (err error) {
+func (u *ProductUsecase) CreateProduct(ctx context.Context, params *presenter.ProductRequest) (err error) {
 	// Mulai transaksi opsional
 	return u.transactionRepo.WithTransaction(ctx, func(txCtx context.Context) error {
 		// Semua repo harus pakai txCtx
@@ -66,7 +66,7 @@ func (u *productUsecase) CreateProduct(ctx context.Context, params *presenter.Pr
 	})
 }
 
-func (u *productUsecase) UpdateProduct(ctx context.Context, params *presenter.ProductRequest, id int) (err error) {
+func (u *ProductUsecase) UpdateProduct(ctx context.Context, params *presenter.ProductRequest, id int) (err error) {
 	return u.transactionRepo.WithTransaction(ctx, func(txCtx context.Context) error {
 		// Ambil product dulu, pakai txCtx
 		product, err := u.productRepo.GetProductByID(txCtx, id)
@@ -87,7 +87,7 @@ func (u *productUsecase) UpdateProduct(ctx context.Context, params *presenter.Pr
 	})
 }
 
-func (u *productUsecase) DeleteProduct(ctx context.Context, id int) (err error) {
+func (u *ProductUsecase) DeleteProduct(ctx context.Context, id int) (err error) {
 	return u.transactionRepo.WithTransaction(ctx, func(txCtx context.Context) error {
 		// Ambil product dulu, pakai txCtx
 		product, err := u.productRepo.GetProductByID(txCtx, id)

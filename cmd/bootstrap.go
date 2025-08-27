@@ -22,7 +22,7 @@ func InitDependencies() *Dependencies {
 	cfg := config.Get()
 
 	// Init logger
-	log := logger.NewLogger()
+	log := logger.NewLogger(cfg)
 
 	// Init DB
 	dsn := fmt.Sprintf(
