@@ -1,4 +1,4 @@
-package domain
+package entity
 
 import "github.com/Temisaputra/warOnk/delivery/presenter"
 

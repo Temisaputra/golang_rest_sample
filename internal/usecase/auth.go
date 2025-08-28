@@ -5,7 +5,7 @@ import (
 
 	"github.com/Temisaputra/warOnk/delivery/presenter"
 	"github.com/Temisaputra/warOnk/delivery/repository"
-	"github.com/Temisaputra/warOnk/internal/domain"
+	"github.com/Temisaputra/warOnk/internal/domain/entity"
 	"github.com/Temisaputra/warOnk/pkg/auth"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -33,8 +33,8 @@ func (u *AuthUsecase) Register(ctx context.Context, params *presenter.RegisterRe
 			return err
 		}
 
-		// Mapping ke domain
-		user := domain.Users{
+		// Mapping ke entity
+		user := entity.Users{
 			Username: params.Username,
 			Email:    params.Email,
 			Role:     params.Role,

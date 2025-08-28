@@ -12,7 +12,7 @@ import (
 	"github.com/Temisaputra/warOnk/delivery/presenter/request"
 	"github.com/Temisaputra/warOnk/delivery/presenter/response"
 	irepository "github.com/Temisaputra/warOnk/delivery/repository"
-	"github.com/Temisaputra/warOnk/internal/domain"
+	"github.com/Temisaputra/warOnk/internal/domain/entity"
 	"gorm.io/gorm"
 )
 
@@ -27,7 +27,7 @@ func NewProductRepo(db *gorm.DB) irepository.ProductRepository {
 }
 
 func (r *ProductRepository) GetAllProduct(ctx context.Context, pagination *request.Pagination) (products []*presenter.ProductResponse, meta response.Meta, err error) {
-	db := r.Conn(ctx).WithContext(ctx).Model(&domain.Products{}).Where("deleted_at IS NULL")
+	db := r.Conn(ctx).WithContext(ctx).Model(&entity.Products{}).Where("deleted_at IS NULL")
 
 	if pagination.Keyword != "" {
 		keywordStr := "%" + pagination.Keyword + "%"
@@ -52,7 +52,7 @@ func (r *ProductRepository) GetAllProduct(ctx context.Context, pagination *reque
 		return nil, meta, err
 	}
 
-	var result []domain.Products
+	var result []entity.Products
 
 	if err = db.Offset(offset).Limit(limit).Find(&result).Error; err != nil {
 		return nil, meta, err
@@ -70,8 +70,8 @@ func (r *ProductRepository) GetAllProduct(ctx context.Context, pagination *reque
 }
 
 func (r *ProductRepository) GetProductByID(ctx context.Context, id int) (product *presenter.ProductResponse, err error) {
-	var result domain.Products
-	db := r.Conn(ctx).WithContext(ctx).Model(&domain.Products{}).Where("id = ?", id)
+	var result entity.Products
+	db := r.Conn(ctx).WithContext(ctx).Model(&entity.Products{}).Where("id = ?", id)
 	if err := db.Where("deleted_at IS NULL").First(&result).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, fmt.Errorf("[ProductRepository-GetProductByID] Product not found: %w", err)
@@ -93,7 +93,7 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, params *presenter
 		"product_stock":  params.ProductStock,
 		"created_at":     currentTime,
 	}
-	db := conn.WithContext(ctx).Model(&domain.Products{})
+	db := conn.WithContext(ctx).Model(&entity.Products{})
 	if err := db.Create(&storedData).Error; err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (r *ProductRepository) UpdateProduct(ctx context.Context, params *presenter
 		"updated_at":     currentTime,
 	}
 
-	db := conn.WithContext(ctx).Model(&domain.Products{})
+	db := conn.WithContext(ctx).Model(&entity.Products{})
 	if err := db.Where("id = ?", id).Updates(&updatedData).Error; err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func (r *ProductRepository) DeleteProduct(ctx context.Context, id int) error {
 		"deleted_at": currentTime,
 	}
 
-	db := conn.WithContext(ctx).Model(&domain.Products{})
+	db := conn.WithContext(ctx).Model(&entity.Products{})
 	if err := db.Where("id = ?", id).Updates(&deletedData).Error; err != nil {
 		return err
 	}
