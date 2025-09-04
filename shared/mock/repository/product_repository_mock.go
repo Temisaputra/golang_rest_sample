@@ -13,9 +13,9 @@ import (
 	context "context"
 	reflect "reflect"
 
-	presenter "github.com/Temisaputra/warOnk/delivery/presenter"
-	request "github.com/Temisaputra/warOnk/delivery/presenter/request"
-	response "github.com/Temisaputra/warOnk/delivery/presenter/response"
+	presenter "github.com/Temisaputra/warOnk/internal/delivery/presenter"
+	request "github.com/Temisaputra/warOnk/internal/delivery/presenter/request"
+	response "github.com/Temisaputra/warOnk/internal/delivery/presenter/response"
 	gomock "go.uber.org/mock/gomock"
 )
 

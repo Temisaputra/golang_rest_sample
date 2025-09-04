@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Temisaputra/warOnk/delivery/handler"
+	"github.com/Temisaputra/warOnk/internal/delivery/handler"
 	repository "github.com/Temisaputra/warOnk/internal/infrastructure/db"
 	"github.com/Temisaputra/warOnk/internal/infrastructure/router"
 	usecase "github.com/Temisaputra/warOnk/internal/usecase"
@@ -86,8 +86,4 @@ var restCmd = &cobra.Command{
 		}
 		deps.Logger.Info("Server exited properly")
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(restCmd)
 }

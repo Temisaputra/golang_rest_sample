@@ -19,7 +19,10 @@ func NewLogger(config *config.Config) *zap.Logger {
 	cfg.EncoderConfig.TimeKey = "timestamp"
 	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	logger, _ := cfg.Build()
+	logger, err := cfg.Build()
+	if err != nil {
+		panic("failed to build zap logger: " + err.Error())
+	}
 	return logger
 }
 

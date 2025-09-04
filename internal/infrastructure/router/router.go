@@ -3,9 +3,9 @@ package router
 import (
 	"net/http"
 
-	"github.com/Temisaputra/warOnk/delivery/handler"
-	"github.com/Temisaputra/warOnk/delivery/middleware"
 	_ "github.com/Temisaputra/warOnk/docs" // wajib untuk register doc
+	"github.com/Temisaputra/warOnk/internal/delivery/handler"
+	"github.com/Temisaputra/warOnk/internal/delivery/middleware"
 	"github.com/Temisaputra/warOnk/internal/infrastructure/config"
 	"github.com/Temisaputra/warOnk/pkg/auth"
 	"github.com/gorilla/mux"

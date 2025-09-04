@@ -3,10 +3,10 @@ package handler
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 
-	"github.com/Temisaputra/warOnk/delivery/presenter"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/validation"
 	"github.com/Temisaputra/warOnk/pkg/helper"
 )
 
@@ -42,7 +42,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Registering user: %v", request)
+	//Validasi sebelum lanjut ke usecase
+	if err := validation.ValidateStruct(request); err != nil {
+		helper.WriteResponse(w, err, nil)
+		return
+	}
 
 	err := h.authUsecase.Register(r.Context(), &request)
 	if err != nil {
@@ -72,6 +76,12 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var request presenter.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+		helper.WriteResponse(w, err, nil)
+		return
+	}
+
+	//Validasi sebelum lanjut ke usecase
+	if err := validation.ValidateStruct(request); err != nil {
 		helper.WriteResponse(w, err, nil)
 		return
 	}

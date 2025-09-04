@@ -5,9 +5,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/Temisaputra/warOnk/delivery/presenter"
-	"github.com/Temisaputra/warOnk/delivery/presenter/request"
-	"github.com/Temisaputra/warOnk/delivery/presenter/response"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/request"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/response"
 	productUsecase "github.com/Temisaputra/warOnk/internal/usecase"
 	repositoryMock "github.com/Temisaputra/warOnk/shared/mock/repository"
 	. "github.com/smartystreets/goconvey/convey"

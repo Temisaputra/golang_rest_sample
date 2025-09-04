@@ -8,10 +8,10 @@ import (
 
 	"errors"
 
-	"github.com/Temisaputra/warOnk/delivery/presenter"
-	"github.com/Temisaputra/warOnk/delivery/presenter/request"
-	"github.com/Temisaputra/warOnk/delivery/presenter/response"
-	irepository "github.com/Temisaputra/warOnk/delivery/repository"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/request"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/response"
+	irepository "github.com/Temisaputra/warOnk/internal/delivery/repository"
 	"github.com/Temisaputra/warOnk/internal/domain/entity"
 	"gorm.io/gorm"
 )

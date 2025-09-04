@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/Temisaputra/warOnk/delivery/presenter"
-	"github.com/Temisaputra/warOnk/delivery/presenter/request"
-	"github.com/Temisaputra/warOnk/delivery/presenter/response"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/request"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/response"
 )
 
 type ProductRepository interface {

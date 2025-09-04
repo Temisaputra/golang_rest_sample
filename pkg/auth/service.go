@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Temisaputra/warOnk/delivery/repository"
+	"github.com/Temisaputra/warOnk/internal/delivery/repository"
 	"github.com/Temisaputra/warOnk/internal/domain/entity"
 	"github.com/Temisaputra/warOnk/internal/infrastructure/config"
 	"github.com/Temisaputra/warOnk/pkg/helper"

@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/Temisaputra/warOnk/delivery/presenter"
-	"github.com/Temisaputra/warOnk/delivery/presenter/request"
-	"github.com/Temisaputra/warOnk/delivery/presenter/response"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/request"
+	"github.com/Temisaputra/warOnk/internal/delivery/presenter/response"
 	"github.com/Temisaputra/warOnk/pkg/helper"
 )
 
