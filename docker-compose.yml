@@ -1,20 +1,8 @@
 version: "3.8"
 
 services:
-  rest-service:
-    build:
-      context: .
-      dockerfile: deployments/Dockerfile
-    container_name: rest-service
-    ports:
-      - "8085:8085"
-    networks:
-      - elk
-    env_file:
-      - ./.env
-
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
@@ -31,7 +19,7 @@ services:
       retries: 5
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:8.13.0
+    image: docker.elastic.co/kibana/kibana:8.15.0
     container_name: kibana
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
@@ -41,18 +29,50 @@ services:
       - elk
 
   logstash:
-    image: docker.elastic.co/logstash/logstash:8.13.0
+    image: docker.elastic.co/logstash/logstash:8.15.0
     container_name: logstash
     ports:
-      - "5044:5044/udp" # GELF UDP
-      - "5044:5044/tcp"
+      - "5044:5044" # Gunakan TCP + UDP (biarkan log driver tentukan protokolnya)
+      - "9600:9600" # Monitoring API
     volumes:
       - ./logstash/pipeline:/usr/share/logstash/pipeline
     depends_on:
       - elasticsearch
+    environment:
+      - LS_JAVA_OPTS=-Xmx512m -Xms512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9600"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    networks:
+      elk:
+        ipv4_address: 172.29.0.4
+
+  rest-service:
+    build:
+      context: .
+      dockerfile: deployments/Dockerfile
+    container_name: rest-service
+    ports:
+      - "8085:8085"
     networks:
       - elk
+    env_file:
+      - ./.env
+    depends_on:
+      - logstash
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://172.29.0.4:5044"
+        tag: "rest-service"
 
 networks:
   elk:
+    name: elk
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.29.0.0/16
